@@ -40,6 +40,6 @@ app.listen(port, () => {
 });
 
 app.use((err: any, req: any, res: any, next: NextFunction) => {
-  req.log.error({ err });
+  req.log.error({ err, message: err.message });
   res.status(500).json("Internal server error");
 });
