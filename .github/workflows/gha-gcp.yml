@@ -35,8 +35,5 @@ jobs:
       - name: "Set region for Cloud Run"
         run: "gcloud config set run/region europe-north1"
 
-      - name: "Set Port number"
-        run: "gcloud config port 3000"
-
       - name: "Run gha-gcp-lab"
         run: "gcloud run deploy gha-gcp-lab --source . --allow-unauthenticated"
