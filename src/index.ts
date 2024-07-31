@@ -43,8 +43,9 @@ app.get("/cars", (req: any, res: any) => {
   req.log.info({ message: "GET /cars" });
   res.json(cars);
 });
+
 app.get("/cars/:id", (req: any, res: any) => {
-  const id = req.params.id;
+  const { id } = req.body;
   req.log.info({ message: `GET /cars/${id}` });
   const car = cars.find((car) => car.id == id);
   if (!car) {
@@ -52,6 +53,20 @@ app.get("/cars/:id", (req: any, res: any) => {
   } else {
     res.json(car);
   }
+});
+
+app.post("/cars", (req, res) => {
+  const { id } = req.body;
+
+  const car = cars.find((car) => car.id == id);
+  if (!car) {
+    return res.sendStatus(404);
+  }
+  if (car.status == "purchased") {
+    return res.json("Not available");
+  }
+  car.status = "purchased";
+  res.send();
 });
 
 app.listen(port, () => {
