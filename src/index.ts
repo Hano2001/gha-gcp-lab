@@ -1,6 +1,9 @@
 import express, { NextFunction } from "express";
 import bunyan from "bunyan";
 import { v4 } from "uuid";
+import * as schema from "./db/schema.js";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
 const log = bunyan.createLogger({
   name: "gcp-lab",
@@ -26,6 +29,12 @@ const cars: Car[] = [
     status: "available",
   },
 ];
+
+const dbUrl = process.env.POSTGRES_URL!;
+
+const client = postgres(dbUrl);
+
+const db = drizzle(client, { schema });
 
 const app = express();
 const port = 8080;
