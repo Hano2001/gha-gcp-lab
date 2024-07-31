@@ -28,7 +28,7 @@ const cars: Car[] = [
 ];
 
 const app = express();
-const port = 3000;
+const port = 8080;
 
 app.use((req: any, res, next: NextFunction) => {
   req.log = log.child({ req_id: v4() }, true);
