@@ -43,6 +43,16 @@ app.get("/cars", (req: any, res: any) => {
   req.log.info({ message: "GET /cars" });
   res.json(cars);
 });
+app.get("/cars/:id", (req: any, res: any) => {
+  const id = req.params.id;
+  req.log.info({ message: `GET /cars/${id}` });
+  const car = cars.find((car) => car.id == id);
+  if (!car) {
+    res.sendStatus(404);
+  } else {
+    res.json(car);
+  }
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
