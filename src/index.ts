@@ -30,6 +30,11 @@ app.use((req: any, res, next: NextFunction) => {
 
 app.use(express.json());
 
+app.get("/status", (req: any, res: any) => {
+  req.log.info({ message: "GET /status" });
+  res.json("OK");
+});
+
 app.get("/cars", (req: any, res: any) => {
   req.log.info({ message: "GET /cars" });
   res.json(cars);
