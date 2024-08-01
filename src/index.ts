@@ -52,19 +52,19 @@ app.get("/cars/:id", async (req: any, res: any) => {
   }
 });
 
-app.put("/cars", async (req, res) => {
-  const { id } = req.body;
-  const car = await db.query.cars.findFirst({ where: eq(cars.id, id) });
+app.patch("/cars", async (req, res) => {
+  const { carId } = req.body;
+  const car = await db.query.cars.findFirst({ where: eq(cars.id, carId) });
   if (!car) {
     return res.sendStatus(404);
   }
   if (car.status == "purchased") {
     return res.json("Not available");
   }
-  const updatedCar = await db
+  await db
     .update(cars)
     .set({ status: "purchased" })
-    .where(eq(cars.id, id))
+    .where(eq(cars.id, carId))
     .returning();
 
   res.send();
