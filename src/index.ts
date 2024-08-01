@@ -36,9 +36,10 @@ app.get("/status", (req: any, res: any) => {
   res.json("OK");
 });
 
-app.get("/cars", (req: any, res: any) => {
+app.get("/cars", async (req: any, res: any) => {
   req.log.info({ message: "GET /cars" });
-  res.json(cars);
+  const allCars = await db.query.cars.findMany();
+  res.json(allCars);
 });
 
 app.get("/cars/:id", async (req: any, res: any) => {
