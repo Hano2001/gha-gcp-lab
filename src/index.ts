@@ -4,31 +4,13 @@ import { v4 } from "uuid";
 import * as schema from "./db/schema.js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { cars } from "./db/schema.js";
+import { eq } from "drizzle-orm";
 
 const log = bunyan.createLogger({
   name: "gcp-lab",
   serializers: bunyan.stdSerializers,
 });
-
-type Car = {
-  id: string;
-  status: "available" | "purchased";
-};
-
-const cars: Car[] = [
-  {
-    id: "1",
-    status: "available",
-  },
-  {
-    id: "2",
-    status: "purchased",
-  },
-  {
-    id: "3",
-    status: "available",
-  },
-];
 
 const dbUrl = process.env.POSTGRES_URL!;
 
@@ -53,10 +35,10 @@ app.get("/cars", (req: any, res: any) => {
   res.json(cars);
 });
 
-app.get("/cars/:id", (req: any, res: any) => {
+app.get("/cars/:id", async (req: any, res: any) => {
   const { id } = req.body;
   req.log.info({ message: `GET /cars/${id}` });
-  const car = cars.find((car) => car.id == id);
+  const car = await db.query.cars.findFirst({ where: eq(cars.id, id) });
   if (!car) {
     res.sendStatus(404);
   } else {
@@ -64,18 +46,27 @@ app.get("/cars/:id", (req: any, res: any) => {
   }
 });
 
-app.post("/cars", (req, res) => {
+app.put("/cars", async (req, res) => {
   const { id } = req.body;
-
-  const car = cars.find((car) => car.id == id);
+  const car = await db.query.cars.findFirst({ where: eq(cars.id, id) });
   if (!car) {
     return res.sendStatus(404);
   }
   if (car.status == "purchased") {
     return res.json("Not available");
   }
-  car.status = "purchased";
+  const updatedCar = await db
+    .update(cars)
+    .set({ status: "purchased" })
+    .where(eq(cars.id, id))
+    .returning();
+
   res.send();
+});
+
+app.post("/cars", async (req, res) => {
+  const car = await db.insert(cars).values({ status: "available" }).returning();
+  res.json(car);
 });
 
 app.listen(port, () => {
