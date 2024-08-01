@@ -37,19 +37,28 @@ app.get("/status", (req: any, res: any) => {
 });
 
 app.get("/cars", async (req: any, res: any) => {
-  req.log.info({ message: "GET /cars" });
-  const allCars = await db.query.cars.findMany();
-  res.json(allCars);
+  try {
+    req.log.info({ message: "GET /cars" });
+    const allCars = await db.query.cars.findMany();
+    res.json(allCars);
+  } catch (error) {
+    res.status(500).json("Failed to get cars from database");
+  }
 });
 
 app.get("/cars/:id", async (req: any, res: any) => {
   const { id } = req.body;
+
   req.log.info({ message: `GET /cars/${id}` });
-  const car = await db.query.cars.findFirst({ where: eq(cars.id, id) });
-  if (!car) {
-    res.sendStatus(404);
-  } else {
-    res.json(car);
+  try {
+    const car = await db.query.cars.findFirst({ where: eq(cars.id, id) });
+    if (!car) {
+      res.sendStatus(404);
+    } else {
+      res.json(car);
+    }
+  } catch (error) {
+    res.status(500).json("Failed to get car by id from database");
   }
 });
 
@@ -72,8 +81,15 @@ app.patch("/cars", async (req, res) => {
 });
 
 app.post("/cars", async (req, res) => {
-  const car = await db.insert(cars).values({ status: "available" }).returning();
-  res.json(car);
+  try {
+    const car = await db
+      .insert(cars)
+      .values({ status: "available" })
+      .returning();
+    res.json(car);
+  } catch (error) {
+    res.status(500).json("Failed to add car to database");
+  }
 });
 
 app.listen(port, () => {
