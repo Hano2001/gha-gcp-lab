@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { NextFunction } from "express";
 import bunyan from "bunyan";
 import { v4 } from "uuid";
